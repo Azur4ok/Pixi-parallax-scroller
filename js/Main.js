@@ -15,29 +15,21 @@ export class Main {
     this.loadSpriteSheet()
   }
 
-  update() {
+  loadSpriteSheet() {
+    const loader = PIXI.Loader.shared
+    loader.add('wall', 'images/wall.json')
+    loader.add('bg-mid', 'images/bg-mid.png')
+    loader.add('bg-far', 'images/bg-far.png')
+    loader.load(this.spriteSheetLoaded)
+  }
+
+  spriteSheetLoaded = async () => {
     this.scroller = new Scroller(this.container)
     this.app.ticker.add((delta) => {
       this.scroller.moveViewportXBy(this.SCROLL_SPEED)
     })
-  }
 
-  loadSpriteSheet() {
-    this.app.loader.add('wall', 'images/wall.json')
-    // this.app.loader.add('bg-mid', 'images/bg-mid.png')
-    // this.app.loader.add('bg-far', 'images/bg-far.png')
-    this.app.loader.load(this.spriteSheetLoaded.bind(this))
-  }
-
-  spriteSheetLoaded() {
-    this.update()
-
-    const sheet = this.app.loader.resources['wall']
-    this.pool = new WallSpritesPool(sheet)
-    this.wallSlices = []
-    this.generateTestWallSpan()
-    
-    
+    const sheet = await this.app.loader.resources['wall']
   }
 
   borrowWallSprites = (number) => {
@@ -74,18 +66,26 @@ export class Main {
       this.pool.borrowFrontEdge, // 1st slice
       this.pool.borrowWindow, // 2nd slice
       this.pool.borrowDecoration, // 3rd slice
+      this.pool.borrowStep,
       this.pool.borrowWindow, // 4th slice
-      this.pool.borrowDecoration, // 5th slice
-      this.pool.borrowWindow, // 6th slice
       this.pool.borrowBackEdge, // 7th slice
+    ]
+
+    const yPos = [
+      128, // 1st slice
+      128, // 2nd slice
+      128, // 3rd slice
+      192, // 4th slice
+      192, // 5th slice
+      192, // 6th slice
     ]
 
     for (let i = 0; i < lookupTable.length; i++) {
       const func = lookupTable[i]
 
       const sprite = func.call(this.pool)
-      sprite.position.x = 32 + i * 64
-      sprite.position.y = 128
+      sprite.position.x = 64 + i * 64
+      sprite.position.y = yPos[i]
 
       this.wallSlices.push(sprite)
 
@@ -98,8 +98,7 @@ export class Main {
       this.pool.returnFrontEdge, // 1st slice
       this.pool.returnWindow, // 2nd slice
       this.pool.returnDecoration, // 3rd slice
-      this.pool.returnWindow, // 4th slice
-      this.pool.returnDecoration, // 5th slice
+      this.pool.returnStep,
       this.pool.returnWindow, // 6th slice
       this.pool.returnBackEdge, // 7th slice
     ]

@@ -1,4 +1,6 @@
 import { SpriteImage } from './SpriteImage.js'
+import { Walls } from './Walls.js'
+import { MapBuilder } from './MapBuilder.js'
 
 export class Scroller {
   constructor(stage) {
@@ -10,6 +12,11 @@ export class Scroller {
     this.midImage.DELTA_X = 0.64
     stage.addChild(this.midImage)
 
+    this.front = new Walls()
+    stage.addChild(this.front)
+
+    this.mapBuilder = new MapBuilder(this.front)
+
     this.viewportX = 0
   }
 
@@ -17,6 +24,7 @@ export class Scroller {
     this.viewportX = viewportX
     this.farImage.setViewportX(viewportX)
     this.midImage.setViewportX(viewportX)
+    this.front.setViewportX(viewportX)
   }
 
   getViewportX() {
