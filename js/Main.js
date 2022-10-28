@@ -1,7 +1,6 @@
 import * as PIXI from './pixi.mjs'
 
 import { Scroller } from './Scroller.js'
-import { WallSpritesPool } from './WallSpritesPool.js'
 
 export class Main {
   static MIN_SCROLL_SPEED = 5

@@ -1,4 +1,5 @@
 import * as PIXI from './pixi.mjs'
+
 import { WallSpritesPool } from './WallSpritesPool.js'
 import { SliceType } from './SliceType.js'
 import { WallSlice } from './WallSlice.js'

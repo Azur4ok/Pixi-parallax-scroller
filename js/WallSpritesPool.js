@@ -1,5 +1,4 @@
 import * as PIXI from './pixi.mjs'
-
 export class WallSpritesPool {
   constructor() {
     this.sheet = PIXI.Loader.shared.resources['wall'].spritesheet
