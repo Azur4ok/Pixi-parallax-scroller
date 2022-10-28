@@ -4,8 +4,8 @@ import { SliceType } from './SliceType.js'
 import { WallSlice } from './WallSlice.js'
 
 export class Walls extends PIXI.Container {
-  VIEWPORT_WIDTH = 512
-  VIEWPORT_NUM_SLICES = Math.ceil(Walls.VIEWPORT_WIDTH / WallSlice.WIDTH) + 1
+  static VIEWPORT_WIDTH = 512
+  static VIEWPORT_NUM_SLICES = Math.ceil(Walls.VIEWPORT_WIDTH / WallSlice.WIDTH) + 1
   constructor() {
     super()
 
@@ -14,29 +14,27 @@ export class Walls extends PIXI.Container {
 
     this.slices = []
 
-    this.createTestMap()
-
     this.viewportX = 0
     this.viewportSliceX = 0
   }
 
   addNewSlices() {
-    let firstX = -(this.viewportX % WallSlice.WIDTH)
+    const firstX = -(this.viewportX % WallSlice.WIDTH)
     for (
       let i = this.viewportSliceX, sliceIndex = 0;
       i < this.viewportSliceX + Walls.VIEWPORT_NUM_SLICES;
-      i++
+      i++, sliceIndex++
     ) {
       const slice = this.slices[i]
       if (slice.sprite === null && slice.type != SliceType.GAP) {
         slice.sprite = this.borrowWallSprite(slice.type)
 
-        slice.sprite.position.x = firstX + sliceIndex * WallSlice.WIDTH
-        slice.sprite.position.y = slice.y
+        slice.sprite.x = firstX + sliceIndex * WallSlice.WIDTH
+        slice.sprite.y = slice.y
 
         this.addChild(slice.sprite)
       } else if (slice.sprite !== null) {
-        slice.sprite.position.x = firstX + sliceIndex * WallSlice.WIDTH
+        slice.sprite.x = firstX + sliceIndex * WallSlice.WIDTH
       }
     }
   }
@@ -46,10 +44,8 @@ export class Walls extends PIXI.Container {
     if (numOldSlices > Walls.VIEWPORT_NUM_SLICES) {
       numOldSlices = Walls.VIEWPORT_NUM_SLICES
     }
-
     for (let i = prevViewportSliceX; i < prevViewportSliceX + numOldSlices; i++) {
       const slice = this.slices[i]
-
       if (slice.sprite !== null) {
         this.returnWallSprite(slice.type, slice.sprite)
         this.removeChild(slice.sprite)
@@ -60,10 +56,8 @@ export class Walls extends PIXI.Container {
 
   setViewportX(viewportX) {
     this.viewportX = this.checkViewportXBounds(viewportX)
-
     const prevViewportSliceX = this.viewportSliceX
     this.viewportSliceX = Math.floor(this.viewportX / WallSlice.WIDTH)
-
     this.removeOldSlices(prevViewportSliceX)
     this.addNewSlices()
   }
@@ -73,9 +67,10 @@ export class Walls extends PIXI.Container {
 
     if (viewportX < 0) {
       viewportX = 0
-    } else if (viewportX >= maxViewportX) {
+    } else if (viewportX > maxViewportX) {
       viewportX = maxViewportX
     }
+
     return viewportX
   }
 
@@ -106,39 +101,5 @@ export class Walls extends PIXI.Container {
 
   returnWallSprite(sliceType, sliceSprite) {
     return this.returnWallSpriteLookup[sliceType].call(this.pool, sliceSprite)
-  }
-
-  createTestWallSpan() {
-    this.addSlice(SliceType.FRONT, 192)
-    this.addSlice(SliceType.WINDOW, 192)
-    this.addSlice(SliceType.DECORATION, 192)
-    this.addSlice(SliceType.WINDOW, 192)
-    this.addSlice(SliceType.DECORATION, 192)
-    this.addSlice(SliceType.WINDOW, 192)
-    this.addSlice(SliceType.DECORATION, 192)
-    this.addSlice(SliceType.WINDOW, 192)
-    this.addSlice(SliceType.BACK, 192)
-  }
-
-  createTestSteppedWallSpan() {
-    this.addSlice(SliceType.FRONT, 192)
-    this.addSlice(SliceType.WINDOW, 192)
-    this.addSlice(SliceType.DECORATION, 192)
-    this.addSlice(SliceType.STEP, 256)
-    this.addSlice(SliceType.WINDOW, 256)
-    this.addSlice(SliceType.BACK, 256)
-  }
-
-  createTestGap() {
-    this.addSlice(SliceType.GAP)
-  }
-
-  createTestMap() {
-    for (let i = 0; i < 10; i++) {
-      this.createTestWallSpan()
-      this.createTestGap()
-      this.createTestSteppedWallSpan()
-      this.createTestGap()
-    }
   }
 }

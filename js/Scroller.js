@@ -5,11 +5,11 @@ import { MapBuilder } from './MapBuilder.js'
 export class Scroller {
   constructor(stage) {
     this.farImage = new SpriteImage('./images/bg-far.png', 512, 256)
-    this.farImage.DELTA_X = 0.128
+    this.farImage.DELTA_X = 0.64
     stage.addChild(this.farImage)
 
     this.midImage = new SpriteImage('./images/bg-mid.png', 512, 256, null, 128)
-    this.midImage.DELTA_X = 0.64
+    this.midImage.DELTA_X = 0.32
     stage.addChild(this.midImage)
 
     this.front = new Walls()
